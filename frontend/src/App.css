@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.Mui-selected {
+  background-color: #2ab0ef1d !important
+}
