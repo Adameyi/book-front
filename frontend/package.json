@@ -12,13 +12,17 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.3.4",
-    "@mui/material": "^7.3.4",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
+    "@mui/x-date-pickers": "^8.19.0",
     "axios": "^1.13.1",
     "formik": "^2.4.6",
+    "material-react-table": "^3.2.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.9.4"
+    "react-dropzone": "^14.3.8",
+    "react-router": "^7.9.4",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

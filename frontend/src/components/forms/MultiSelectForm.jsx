@@ -5,6 +5,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText'
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 
@@ -18,12 +19,12 @@ const MenuProps = {
   },
 };
 
-export default function MultipleSelectForm({ label, options, name, value, onChange, onBlur }) {
+export default function MultipleSelectForm({ label, options, name, value, onChange, onBlur, error, helperText }) {
   const theme = useTheme();
 
   return (
     <div>
-      <FormControl className='w-full'>
+      <FormControl className='w-full' error={error}>
         <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"
@@ -55,6 +56,7 @@ export default function MultipleSelectForm({ label, options, name, value, onChan
             </MenuItem>
           ))}
         </Select>
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>
     </div>
   );
