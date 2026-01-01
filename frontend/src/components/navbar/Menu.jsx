@@ -10,7 +10,7 @@ import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import {Link, useLocation} from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 export default function Menu() {
     const [open, setOpen] = React.useState(true);
@@ -21,7 +21,7 @@ export default function Menu() {
 
     const location = useLocation()
     const path = location.pathname
-    
+
 
     return (
         <>
@@ -35,7 +35,7 @@ export default function Menu() {
                     </ListSubheader>
                 }
             >
-                <ListItemButton onClick={handleClick}  component={Link} to = '/' selected={path === "/"}>
+                <ListItemButton onClick={handleClick} component={Link} to='/' selected={path === "/"}>
                     <ListItemIcon>
                         <LocalLibraryIcon />
                     </ListItemIcon>
@@ -82,11 +82,17 @@ export default function Menu() {
                     </ListSubheader>
                 }
             >
-                <ListItemButton component={Link} to = '/addbook' selected={path === "/addbook"}>
+                <ListItemButton component={Link} to='/addbook' selected={path === "/addbook"}>
                     <ListItemIcon>
                         <NoteAddIcon />
                     </ListItemIcon>
                     <ListItemText primary="Add Book" />
+                </ListItemButton>
+                <ListItemButton component={Link} to='/authorlist' selected={path === "/authorlist"}>
+                    <ListItemIcon>
+                        <NoteAddIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Author List" />
                 </ListItemButton>
             </List>
         </>

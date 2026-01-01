@@ -6,15 +6,18 @@ import { MaterialReactTable } from 'material-react-table'
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Chip, Typography, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
+import placeholderImage from '../assets/PlaceholderImage_column.png'
 
 function Home() {
   const [bookData, setBookData] = useState([])
 
   // Store data after fetching
   const GetData = () => {
-    AxiosInstance.get(`book/`).then((res) => {
+    AxiosInstance.get('book/').then((res) => {
       setBookData(res.data)
-    })
+    }).catch((error) =>
+      console.error('Error fetching book data', error)
+    )
   }
 
   useEffect(() => {
@@ -26,12 +29,14 @@ function Home() {
       {
         accessorKey: 'image',
         header: 'Cover',
+        accessorFn: (row) => row?.image || '',
+        enableSorting: false,
         Cell: ({ cell }) => {
           const imageUrl = cell.getValue()
 
           return (
             <img
-              src={imageUrl}
+              src={imageUrl || placeholderImage}
               alt='Book Cover'
               className='w-30 h-48 object-cover'
             />

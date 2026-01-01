@@ -64,7 +64,7 @@ class Book(models.Model):
     authors = models.ManyToManyField("Author", related_name="books")
     languages = models.ManyToManyField(Language)
 
-    isbn = models.CharField(max_length=30)
+    isbn = models.CharField(max_length=30, unique=True)
     title = models.CharField(unique=True, max_length=255)
     image = models.ImageField(upload_to="covers", null=True, blank=True)
     description = models.CharField(max_length=1000)

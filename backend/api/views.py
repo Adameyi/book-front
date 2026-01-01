@@ -10,7 +10,7 @@ class CategoryViewset(viewsets.ViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-    # List all categories
+    # List all Categories.
     def list(self, request):
         queryset = Category.objects.all()
         serializer = self.serializer_class(queryset, many=True)
@@ -22,7 +22,7 @@ class PublisherViewset(viewsets.ViewSet):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
 
-    # List all categories
+    # List all Publishers.
     def list(self, request):
         queryset = Publisher.objects.all()
         serializer = self.serializer_class(queryset, many=True)
@@ -34,11 +34,20 @@ class AuthorViewset(viewsets.ViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
-    # List all categories
+    # List all Authors.
     def list(self, request):
         queryset = Author.objects.all()
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+    # Create Author
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        else:
+            return Response(serializer.error, status=400)
 
 
 class LanguageViewset(viewsets.ViewSet):

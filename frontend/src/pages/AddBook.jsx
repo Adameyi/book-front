@@ -95,10 +95,16 @@ function AddBook() {
       console.log('Form Data', formData)
 
       Object.keys(values).forEach((key) => {
-        //Append file or text fields
+        // Handler for image files
         if (key === 'image' && imageFile) {
           formData.append(key, imageFile)
+          // Handler for array fields (Category, Authors, Languages)
+        } else if (Array.isArray(values[key])) {
+          values[key].forEach((item) => {
+            formData.append(key, item)
+          })
         } else {
+          // Append string
           formData.append(key, values[key])
         }
       })
