@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Box, Chip, Typography, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import placeholderImage from '../assets/PlaceholderImage_column.png'
+import BasicModal from '../components/modals/BasicModal'
 
 function Home() {
   const [bookData, setBookData] = useState([])
@@ -79,7 +80,7 @@ function Home() {
           View Books
         </Typography>
       </Box>
-
+      <BasicModal type={'book'} />
       <MaterialReactTable
         columns={columns}
         data={bookData}
