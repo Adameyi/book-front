@@ -12,6 +12,7 @@ import BasicModal from '../components/modals/BasicModal'
 function Home() {
   const [bookData, setBookData] = useState([])
 
+
   // Store data after fetching
   const GetData = () => {
     AxiosInstance.get('book/').then((res) => {

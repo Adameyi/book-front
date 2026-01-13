@@ -13,6 +13,7 @@ export default function TextForm({ label, value, name, onChange, onBlur, error, 
             variant="outlined"
             error={error}
             helperText={helperText}
+            fullWidth
         />
     );
 }

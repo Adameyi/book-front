@@ -1,29 +1,40 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from django.conf import settings
 from .models import *
 
 
 # Validation to prevent duplicate entries.
-class UniqueFieldValidator:
-    def validate_field(self, value, field_name, model):
-        if model.objects.filter(**{field_name: value}).exists():
-            raise serializers.ValidationError("Author already exists")
-        return value
+# class UniqueFieldValidator:
+#     def validate_field(self, value, field_name, model):
+#         if model.objects.filter(**{field_name: value}).exists():
+#             raise serializers.ValidationError("Author already exists")
+#         return value
 
 
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A Category with this name already exists!",
+            )
+        ]
+    )
+
     class Meta:
         model = User
         fields = ["username", "email", "password"]
         extra_kwargs = {"password": {"write_only": True}}
 
         def create(self, validated_data):
-            user = User.objects.create_user(**validated_data)
+            user = User.objects.create_user(
+                username=validated_data["username"],
+                email=validated_data("email"),
+                password=validated_data["password"],
+            )
             Profile.objects.create(user=user)
             return user
-
-    def validate_field(self, value):
-        return UniqueFieldValidator().validate_field(value, "name", User)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -41,39 +52,63 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=Category.objects.all(),
+                message="A Category with this name already exists!",
+            )
+        ]
+    )
+
     class Meta:
         model = Category
         fields = ("id", "name")
 
-    def validate_field(self, value):
-        return UniqueFieldValidator().validate_field(value, "name", Category)
-
 
 class PublisherSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A Publisher with this name already exists!",
+            )
+        ]
+    )
+
     class Meta:
         model = Publisher
         fields = ("id", "name")
 
-    def validate_field(self, value):
-        return UniqueFieldValidator().validate_field(value, "name", Publisher)
-
 
 class LanguageSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A Category with this name already exists!",
+            )
+        ]
+    )
+
     class Meta:
         model = Language
         fields = ("id", "name")
 
-    def validate_field(self, value):
-        return UniqueFieldValidator().validate_field(value, "name", Language)
-
 
 class AuthorSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A Category with this name already exists!",
+            )
+        ]
+    )
+
     class Meta:
         model = Author
         fields = ("id", "name", "bio")
-
-    def validate_field(self, value):
-        return UniqueFieldValidator().validate_field(value, "name", Author)
 
 
 class BookSerializer(serializers.ModelSerializer):

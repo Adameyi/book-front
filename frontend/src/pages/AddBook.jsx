@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone'
 import { useNavigate } from 'react-router'
 import AxiosInstance from '../services/Axios'
 import TextForm from '../components/forms/TextForm'
-import { Box } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import { useFormik, validateYupSchema } from 'formik'
 import * as yup from 'yup'
 
@@ -180,123 +180,118 @@ function AddBook() {
           Add New Book
         </Box>
 
-        <Box className='w-full justify-evenly items-center p-2 mb-2 mt-2 shadow-lg grid grid-cols-3 gap-2'>
-          <TextForm
-            label={'ISBN'}
-            name='isbn'
-            value={formik.values.isbn}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.isbn && Boolean(formik.errors.isbn)}
-            helperText={formik.touched.isbn && formik.errors.isbn}
-          />
-          <TextForm
-            label={'Title'}
-            name='title'
-            value={formik.values.title}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.title && Boolean(formik.errors.title)}
-            helperText={formik.touched.title && formik.errors.title}
-          />
-          <MultipleSelectForm
-            label={'Authors'}
-            options={author}
-            name='authors'
-            value={formik.values.authors}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.authors && Boolean(formik.errors.authors)}
-            helperText={formik.touched.authors && formik.errors.authors}
-          />
-          <MultipleSelectForm
-            label={'Categories'}
-            options={category}
-            name='category'
-            value={formik.values.category}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.category && Boolean(formik.errors.category)}
-            helperText={formik.touched.category && formik.errors.category}
-          />
-          <MultipleSelectForm
-            label={'Language(s)'}
-            options={languages}
-            name='languages'
-            value={formik.values.languages}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.languages && Boolean(formik.errors.languages)}
-            helperText={formik.touched.languages && formik.errors.languages}
-          />
-          <SelectForm
-            label={'Publisher'}
-            options={publisher}
-            name='publisher'
-            value={formik.values.publisher}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.publisher && Boolean(formik.errors.publisher)}
-            helperText={formik.touched.publisher && formik.errors.publisher}
-          />
-          <TextForm
-            label={'Total Copies'}
-            name='total_copies'
-            value={formik.values.total_copies}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.total_copies && Boolean(formik.errors.total_copies)}
-            helperText={formik.touched.total_copies && formik.errors.total_copies}
-          />
-          <TextForm
-            label={'Available Copies'}
-            name='available_copies'
-            value={formik.values.available_copies}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.available_copies && Boolean(formik.errors.available_copies)}
-            helperText={formik.touched.available_copies && formik.errors.available_copies}
-          />
-          <div className='col-span-3 w-full'>
-            <DescriptionForm
-              label='Description'
-              rows={9}
-              name='description'
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.description && Boolean(formik.errors.description)}
-              helperText={formik.touched.description && formik.errors.description}
-            />
-          </div>
-          {/* Image Upload Section */}
-          <div>
-            <label htmlFor="image">Cover Image</label>
-            <div {...getRootProps()} className='border-2 rounded-lg border-dashed p-2 cursor-pointer text-center'>
-              <input {...getInputProps()} />
-              <p>Drag & Drop an Image Here or Click to Select</p>
-            </div>
-            <input
-              id='image'
-              name='image'
-              type='file'
-              accept='image/*'
-              onChange={handleImageChange}
-              className='mt-2'
-            />
-
-            {/* Image Preview */}
-            {imagePreview && (
-              <div>
-                <h4>Image Preview</h4>
-                <img
-                  src={imagePreview}
-                  alt="Cover Image (Preview)"
-                  className='w-2/3 h-96 object-cover'
-                />
-              </div>
-            )}
-          </div>
+        <Box p={2} mb={2} mt={2} boxShadow={3}>
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <TextForm
+                label="ISBN"
+                name="isbn"
+                value={formik.values.isbn}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.isbn && Boolean(formik.errors.isbn)}
+                helperText={formik.touched.isbn && formik.errors.isbn}
+                className='w-full'
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <TextForm
+                label="Title"
+                name="title"
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.title && Boolean(formik.errors.title)}
+                helperText={formik.touched.title && formik.errors.title}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <MultipleSelectForm
+                label="Authors"
+                options={author}
+                name="authors"
+                value={formik.values.authors}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.authors && Boolean(formik.errors.authors)}
+                helperText={formik.touched.authors && formik.errors.authors}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <MultipleSelectForm
+                label="Categories"
+                options={category}
+                name="category"
+                value={formik.values.category}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.category && Boolean(formik.errors.category)}
+                helperText={formik.touched.category && formik.errors.category}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <MultipleSelectForm
+                label="Language(s)"
+                options={languages}
+                name="languages"
+                value={formik.values.languages}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.languages && Boolean(formik.errors.languages)}
+                helperText={formik.touched.languages && formik.errors.languages}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <SelectForm
+                label="Publisher"
+                options={publisher}
+                name="publisher"
+                value={formik.values.publisher}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.publisher && Boolean(formik.errors.publisher)}
+                helperText={formik.touched.publisher && formik.errors.publisher}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <TextForm
+                label="Total Copies"
+                name="total_copies"
+                value={formik.values.total_copies}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.total_copies && Boolean(formik.errors.total_copies)}
+                helperText={formik.touched.total_copies && formik.errors.total_copies}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <TextForm
+                label="Available Copies"
+                name="available_copies"
+                value={formik.values.available_copies}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.available_copies && Boolean(formik.errors.available_copies)}
+                helperText={formik.touched.available_copies && formik.errors.available_copies}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 12 }}>
+              <DescriptionForm
+                label="Description"
+                rows={9}
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.description && Boolean(formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+              />
+            </Grid>
+            <Grid size={{ md: 6, md: 4 }}>
+            </Grid>
+          </Grid>
         </Box>
         <button type="submit" className='w-full p-2 m-2 bg-rose-800 text-white rounded-lg shadow-xl'>
           Add Book

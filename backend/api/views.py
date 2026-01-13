@@ -1,8 +1,43 @@
 from django.shortcuts import render
+from rest_framework.decorators import action
 from rest_framework import viewsets, permissions
 from .serializers import *
 from .models import *
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
+
+
+class UserViewSet(viewsets.ViewSet):
+    serializer_class = UserSerializer
+
+    # User Login
+    @action(detail=False, methods=["post"])
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = authenticate(username=username, password=password)
+        if not user:
+            return Response({"error": "Invalid Credentials"}, status=401)
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": UserSerializer(user).data,
+            }
+        )
+
+    # User Registration
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        else:
+            return Response(serializer.errors, status=400)
 
 
 class CategoryViewset(viewsets.ViewSet):
@@ -47,7 +82,7 @@ class AuthorViewset(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data, status=200)
         else:
-            return Response(serializer.error, status=400)
+            return Response(serializer.errors, status=400)
 
 
 class LanguageViewset(viewsets.ViewSet):

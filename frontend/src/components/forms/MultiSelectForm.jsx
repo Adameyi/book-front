@@ -24,7 +24,7 @@ export default function MultipleSelectForm({ label, options, name, value, onChan
 
   return (
     <div>
-      <FormControl className='w-full' error={error}>
+      <FormControl fullWidth error={error}>
         <InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
         <Select
           labelId="demo-multiple-chip-label"

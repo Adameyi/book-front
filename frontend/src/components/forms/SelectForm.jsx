@@ -13,7 +13,7 @@ export default function SelectForm({ label, options, value, name, onChange, onBl
     };
 
     return (
-        <Box>
+        <Box >
             <FormControl fullWidth error={error}>
                 <InputLabel id="demo-simple-select-label">{label}</InputLabel>
                 <Select
