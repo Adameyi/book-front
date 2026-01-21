@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,6 +15,8 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
+import { useFormik } from 'formik';
+import * as Yup from 'yup'
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -42,6 +44,10 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function Login() {
+  const [isLogin, setIsLogin] = useState(true)
+  const [error, setError] = useState('')
+  const [user, setUser] = useState('')
+  const [success, setSuccess] = useState('')
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -57,147 +63,218 @@ export default function Login() {
       return;
     }
 
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+    //Validation Schemas
+    const loginSchema = Yup.object({
+      username: Yup.string()
+        .min(3, 'Username must be at least 3 characters!')
+        .required('Username is required.'),
+      password: Yup.string()
+        .min(6, 'Password must be at least 6 characters!')
+        .required('Password is required.')
+    })
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
+    const registerSchema = Yup.object({
+      username: Yup.string()
+        .min(3, 'Username must be at least 3 characters!')
+        .required('Username is required.'),
+      email: Yup.string()
+        .email(3, 'Invalid email address.')
+        .required('Email is required.'),
+      password: Yup.string()
+        .min(6, 'Password must be at least 6 characters!')
+        .matches(
+          /[!@#$%^&*(),.?":{}|<>"]/,
+          'Password must contain at least 1 special character'
+        )
+        .required('Password  is required.'),
+    })
 
-    let isValid = true;
+    //Formik for user register.
+    const registerFormik = useFormik({
+      initialValues: {
+        username: '',
+        email: '',
+        password: ''
+      },
+      validationSchema: loginSchema,
+      onSubmit: async (value, { setSubmitting, resetForm }) => {
+        setError('')
+        setSuccess('')
 
-    if (!email?.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+        try {
+          await AxiosInstance.post('users/', values)
+
+          setSuccess('Registration successful! Please login')
+          resetForm()
+          setTimeout(() => setIsLogin(true), 1500)
+        } catch (registrationError) {
+          const errors = registrationError.response?.data
+          if (errors) {
+            const errorMsg = Object.values(errors).flat().join(' ')
+            setError(errorMsg)
+          } else {
+            setError('Registration failed. Please try again.')
+          }
+        } finally {
+          setSubmitting(false)
+        }
+      }
+    })
+
+    //Formik for user login.
+    const loginFormik = useFormik({
+      initialValues: {
+        username: '',
+        password: ''
+      },
+      validationSchema: loginSchema,
+      onSubmit: async (value, { setSubmitting, resetForm }) => {
+        setError('')
+        setSuccess('')
+
+        try {
+          await AxiosInstance.post('users/post/', values)
+
+          localStorage.setItem('access_token', response.data.access)
+          localStorage.setItem('refresh_token', response.data.refresh)
+          setUser(response.data.user)
+          setSuccess('Login successful! ')
+        } catch (loginError) {
+          setError(loginError.response?.data?.error || 'Login fialed. Please try again.')
+        } finally {
+          setSubmitting(false)
+        }
+      }
+    })
+
+    const currentFormik = isLogin ? loginFormik : registerFormik
+
+    const handleLogout = () => {
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      setUser(null)
+      setSuccess('Logged out successfully')
+      loginFormik.resetForm()
+      registerFormik.resetForm()
     }
 
-    if (!password?.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
+    const toggleForm = () => {
+      setIsLogin(!isLogin)
+      setError('')
+      setSuccess('')
+      loginFormik.resetForm()
+      registerFormik.resetForm()
     }
 
-    return isValid;
-  };
-
-  return (
-    <>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
-            Sign in
-          </Typography>
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
-                name="email"
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? 'error' : 'primary'}
-              />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
+    return (
+      <>
+        <CssBaseline enableColorScheme />
+        <SignInContainer direction="column" justifyContent="space-between">
+          <Card variant="outlined">
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
             >
               Sign in
-            </Button>
-
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
-              Forgot your password?
-            </Link>
-          </Box>
-
-          <Divider>or</Divider>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
-            </Button>
-
-            <Typography sx={{ textAlign: 'center' }}>
-              Don&apos;t have an account?{' '}
-              <Link variant="body2">Sign up</Link>
             </Typography>
-          </Box>
-        </Card>
-      </SignInContainer>
-    </>
-  );
+
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
+            >
+              <FormControl>
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <TextField
+                  error={emailError}
+                  helperText={emailErrorMessage}
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="your@email.com"
+                  autoComplete="email"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                  color={emailError ? 'error' : 'primary'}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <TextField
+                  error={passwordError}
+                  helperText={passwordErrorMessage}
+                  name="password"
+                  placeholder="••••••"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  required
+                  fullWidth
+                  variant="outlined"
+                  color={passwordError ? 'error' : 'primary'}
+                />
+              </FormControl>
+
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                onClick={validateInputs}
+              >
+                Sign in
+              </Button>
+
+              <Link
+                component="button"
+                type="button"
+                onClick={handleClickOpen}
+                variant="body2"
+                sx={{ alignSelf: 'center' }}
+              >
+                Forgot your password?
+              </Link>
+            </Box>
+
+            <Divider>or</Divider>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => alert('Sign in with Google')}
+                startIcon={<GoogleIcon />}
+              >
+                Sign in with Google
+              </Button>
+
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => alert('Sign in with Facebook')}
+                startIcon={<FacebookIcon />}
+              >
+                Sign in with Facebook
+              </Button>
+
+              <Typography sx={{ textAlign: 'center' }}>
+                Don&apos;t have an account?{' '}
+                <Link variant="body2">Sign up</Link>
+              </Typography>
+            </Box>
+          </Card>
+        </SignInContainer>
+        A
+      </>
+    );
+  }
 }
