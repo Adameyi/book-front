@@ -17,6 +17,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
+import AxiosInstance from '../services/Axios'
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -48,126 +49,113 @@ export default function Login() {
   const [error, setError] = useState('')
   const [user, setUser] = useState('')
   const [success, setSuccess] = useState('')
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  //Validation Schemas
+  const loginSchema = Yup.object({
+    username: Yup.string()
+      .min(3, 'Username must be at least 3 characters!')
+      .required('Username is required.'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters!')
+      .required('Password is required.')
+  })
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+  const registerSchema = Yup.object({
+    username: Yup.string()
+      .min(3, 'Username must be at least 3 characters!')
+      .required('Username is required.'),
+    email: Yup.string()
+      .email(3, 'Invalid email address.')
+      .required('Email is required.'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters!')
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>"]/,
+        'Password must contain at least 1 special character'
+      )
+      .required('Password  is required.'),
+  })
 
-    //Validation Schemas
-    const loginSchema = Yup.object({
-      username: Yup.string()
-        .min(3, 'Username must be at least 3 characters!')
-        .required('Username is required.'),
-      password: Yup.string()
-        .min(6, 'Password must be at least 6 characters!')
-        .required('Password is required.')
-    })
-
-    const registerSchema = Yup.object({
-      username: Yup.string()
-        .min(3, 'Username must be at least 3 characters!')
-        .required('Username is required.'),
-      email: Yup.string()
-        .email(3, 'Invalid email address.')
-        .required('Email is required.'),
-      password: Yup.string()
-        .min(6, 'Password must be at least 6 characters!')
-        .matches(
-          /[!@#$%^&*(),.?":{}|<>"]/,
-          'Password must contain at least 1 special character'
-        )
-        .required('Password  is required.'),
-    })
-
-    //Formik for user register.
-    const registerFormik = useFormik({
-      initialValues: {
-        username: '',
-        email: '',
-        password: ''
-      },
-      validationSchema: loginSchema,
-      onSubmit: async (value, { setSubmitting, resetForm }) => {
-        setError('')
-        setSuccess('')
-
-        try {
-          await AxiosInstance.post('users/', values)
-
-          setSuccess('Registration successful! Please login')
-          resetForm()
-          setTimeout(() => setIsLogin(true), 1500)
-        } catch (registrationError) {
-          const errors = registrationError.response?.data
-          if (errors) {
-            const errorMsg = Object.values(errors).flat().join(' ')
-            setError(errorMsg)
-          } else {
-            setError('Registration failed. Please try again.')
-          }
-        } finally {
-          setSubmitting(false)
-        }
-      }
-    })
-
-    //Formik for user login.
-    const loginFormik = useFormik({
-      initialValues: {
-        username: '',
-        password: ''
-      },
-      validationSchema: loginSchema,
-      onSubmit: async (value, { setSubmitting, resetForm }) => {
-        setError('')
-        setSuccess('')
-
-        try {
-          await AxiosInstance.post('users/post/', values)
-
-          localStorage.setItem('access_token', response.data.access)
-          localStorage.setItem('refresh_token', response.data.refresh)
-          setUser(response.data.user)
-          setSuccess('Login successful! ')
-        } catch (loginError) {
-          setError(loginError.response?.data?.error || 'Login fialed. Please try again.')
-        } finally {
-          setSubmitting(false)
-        }
-      }
-    })
-
-    const currentFormik = isLogin ? loginFormik : registerFormik
-
-    const handleLogout = () => {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      setUser(null)
-      setSuccess('Logged out successfully')
-      loginFormik.resetForm()
-      registerFormik.resetForm()
-    }
-
-    const toggleForm = () => {
-      setIsLogin(!isLogin)
+  //Formik for user register.
+  const registerFormik = useFormik({
+    initialValues: {
+      username: '',
+      email: '',
+      password: ''
+    },
+    validationSchema: registerSchema,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       setError('')
       setSuccess('')
-      loginFormik.resetForm()
-      registerFormik.resetForm()
-    }
 
-    return (
-      <>
+      try {
+        await AxiosInstance.post('users/', values)
+
+        setSuccess('Registration successful! Please login')
+        resetForm()
+        setTimeout(() => setIsLogin(true), 1500)
+      } catch (registrationError) {
+        const errors = registrationError.response?.data
+        if (errors) {
+          const errorMsg = Object.values(errors).flat().join(' ')
+          setError(errorMsg)
+        } else {
+          setError('Registration failed. Please try again.')
+        }
+      } finally {
+        setSubmitting(false)
+      }
+    }
+  })
+
+  //Formik for user login.
+  const loginFormik = useFormik({
+    initialValues: {
+      username: '',
+      password: ''
+    },
+    validationSchema: loginSchema,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      setError('')
+      setSuccess('')
+
+      try {
+        const response = await AxiosInstance.post('users/post/', values)
+
+        localStorage.setItem('access_token', response.data.access)
+        localStorage.setItem('refresh_token', response.data.refresh)
+        setUser(response.data.user)
+        setSuccess('Login successful! ')
+      } catch (loginError) {
+        setError(loginError.response?.data?.error || 'Login failed. Please try again.')
+      } finally {
+        setSubmitting(false)
+      }
+    }
+  })
+
+  const currentFormik = isLogin ? loginFormik : registerFormik
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    setUser(null)
+    setSuccess('Logged out successfully')
+    loginFormik.resetForm()
+    registerFormik.resetForm()
+  }
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin)
+    setError('')
+    setSuccess('')
+    loginFormik.resetForm()
+    registerFormik.resetForm()
+  }
+
+  return (
+    <>
+      <form onSubmit={currentFormik.handleSubmit}>
         <CssBaseline enableColorScheme />
         <SignInContainer direction="column" justifyContent="space-between">
           <Card variant="outlined">
@@ -176,68 +164,107 @@ export default function Login() {
               variant="h4"
               sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
             >
-              Sign in
+              {isLogin ? 'Sign In' : 'Sign Up'}
             </Typography>
 
+            {error && (
+              <Box sx={{ backgroundColor: '#ef8686', borderColor: 'red', color: 'red', borderRadius: '2', marginBottom: '4', paddingX: '2' }}>
+                {error}
+              </Box>
+            )}
+
+            {success && (
+              <Box sx={{ backgroundColor: '#c9ef86', borderColor: 'green', color: 'green', borderRadius: '2', marginBottom: '4', paddingX: '2' }}>
+                {success}
+              </Box>
+            )}
+
+
             <Box
-              component="form"
-              onSubmit={handleSubmit}
               noValidate
               sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
             >
+
               <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
+                <FormLabel htmlFor="username">Username</FormLabel>
                 <TextField
-                  error={emailError}
-                  helperText={emailErrorMessage}
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="your@email.com"
-                  autoComplete="email"
+                  id="username"
+                  type="text"
+                  name="username"
+                  value={currentFormik.values.username}
+                  onChange={currentFormik.handleChange}
+                  onBlur={currentFormik.handleBlur}
+                  autoComplete="username"
                   autoFocus
                   required
                   fullWidth
                   variant="outlined"
-                  color={emailError ? 'error' : 'primary'}
                 />
+                {currentFormik.touched.username && currentFormik.errors.username && (
+                  <Typography sx={{ color: 'red', fontSize: '0.875rem' }}>{currentFormik.errors.username}</Typography>
+                )}
               </FormControl>
+              {!isLogin && (
+                <>
+                  <FormControl>
+                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <TextField
+                      value={currentFormik.values.email}
+                      onChange={currentFormik.handleChange}
+                      onBlur={currentFormik.handleBlur}
+                      id="email"
+                      type="email"
+                      name="email"
+                      placeholder="your@email.com"
+                      autoComplete="email"
+                      autoFocus
+                      required
+                      fullWidth
+                      variant="outlined"
+                    />
+                  </FormControl>
 
+                  {currentFormik.touched.email && currentFormik.errors.email && (
+                    <Typography sx={{ color: 'red', marginTop: '1', fontSize: '0.875rem' }}>{currentFormik.errors.email}</Typography>
+                  )}
+                </>
+              )}
               <FormControl>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <TextField
-                  error={passwordError}
-                  helperText={passwordErrorMessage}
+                  value={currentFormik.values.password}
+                  onChange={currentFormik.handleChange}
+                  onBlur={currentFormik.handleBlur}
                   name="password"
-                  placeholder="••••••"
                   type="password"
                   id="password"
                   autoComplete="current-password"
                   required
                   fullWidth
                   variant="outlined"
-                  color={passwordError ? 'error' : 'primary'}
                 />
               </FormControl>
-
+              {currentFormik.touched.password && currentFormik.errors.password && (
+                <Typography sx={{ color: 'red', marginTop: '1', fontSize: '0.875rem' }}>{currentFormik.errors.password}</Typography>
+              )}
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
 
               <Button
+                onClick={currentFormik.handleSubmit}
+                disabled={currentFormik.isSubmitting}
                 type="submit"
                 fullWidth
                 variant="contained"
-                onClick={validateInputs}
               >
-                Sign in
+                {currentFormik.isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
               </Button>
 
               <Link
                 component="button"
                 type="button"
-                onClick={handleClickOpen}
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
@@ -267,14 +294,27 @@ export default function Login() {
               </Button>
 
               <Typography sx={{ textAlign: 'center' }}>
-                Don&apos;t have an account?{' '}
-                <Link variant="body2">Sign up</Link>
+                {isLogin ? (
+                  <>
+                    Don't have an account?{' '}
+                    <Link onClick={toggleForm} sx={{ cursor: 'pointer' }}>
+                      Sign up
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    Already have an account?{' '}
+                    <Link onClick={toggleForm} sx={{ cursor: 'pointer' }}>
+                      Sign in
+                    </Link>
+                  </>
+                )}
               </Typography>
+
             </Box>
           </Card>
-        </SignInContainer>
-        A
-      </>
-    );
-  }
+        </SignInContainer >
+      </form>
+    </>
+  );
 }

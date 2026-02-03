@@ -5,11 +5,18 @@ from .serializers import *
 from .models import *
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 from django.contrib.auth import authenticate
 
 
 class UserViewSet(viewsets.ViewSet):
     serializer_class = UserSerializer
+
+    # List all Users.
+    def list(self, request):
+        queryset = User.objects.all()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
     # User Login
     @action(detail=False, methods=["post"])
@@ -38,6 +45,12 @@ class UserViewSet(viewsets.ViewSet):
             return Response(serializer.data, status=200)
         else:
             return Response(serializer.errors, status=400)
+
+    def get_permissions(self):
+        # Allow any to POST but only admins to GET user list.
+        if self.action in ["list", "retrieve"]:
+            return [IsAdminUser()]
+        return []
 
 
 class CategoryViewset(viewsets.ViewSet):

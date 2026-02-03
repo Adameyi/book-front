@@ -7,7 +7,6 @@ import EditBook from './pages/EditBook'
 import DeleteBook from './pages/DeleteBook'
 import Navbar from './components/navbar/Navbar'
 import AuthorList from './pages/AuthorList'
-import Register from './pages/Register'
 import Login from './pages/Login'
 
 import './App.css'
@@ -20,7 +19,6 @@ function App() {
         content={
           <Routes>
             <Route path='' element={<Home />} />
-            <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
             <Route path='/addbook' element={<AddBook />} />
             <Route path='/addauthor' element={<AddAuthor />} />

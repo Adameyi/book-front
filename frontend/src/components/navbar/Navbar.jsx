@@ -38,7 +38,6 @@ export default function Navbar({ content }) {
           </IconButton>
           <img src={logo} />
           <Button variant="outlined" sx={{ color: 'white', borderColor: 'white', ml: 'auto' }} component={Link} to='/login' selected={path === "/login"}>Sign In</Button>
-          <Button variant="contained" sx={{ color: 'red', borderColor: 'white', background: 'white', ml: '6px' }} component={Link} to='/register' selected={path === "/register"}>Sign Up</Button>
         </Toolbar>
       </AppBar>
       <Drawer
