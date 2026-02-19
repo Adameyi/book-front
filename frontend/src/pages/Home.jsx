@@ -8,10 +8,16 @@ import { Box, Chip, Typography, IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import placeholderImage from '../assets/PlaceholderImage_column.png'
 import BasicModal from '../components/modals/BasicModal'
+import { useAuth } from '../context/AuthContext'
 
 function Home() {
   const [bookData, setBookData] = useState([])
 
+  const { isAuthenticated, user, logout } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to='/login' />
+  }
 
   // Store data after fetching
   const GetData = () => {

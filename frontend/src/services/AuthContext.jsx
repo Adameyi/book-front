@@ -4,7 +4,7 @@ const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
-    const [isAuthenticatied, setIsAuthenticated] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     //Check if user logged in via mount.
     useEffect(() => {

@@ -8,6 +8,7 @@ import DeleteBook from './pages/DeleteBook'
 import Navbar from './components/navbar/Navbar'
 import AuthorList from './pages/AuthorList'
 import Login from './pages/Login'
+import { AuthProvider } from './services/AuthContext'
 
 import './App.css'
 
@@ -20,12 +21,14 @@ function App() {
           <Routes>
             <Route path='' element={<Home />} />
             <Route path='/login' element={<Login />} />
-            <Route path='/addbook' element={<AddBook />} />
-            <Route path='/addauthor' element={<AddAuthor />} />
-            <Route path='/authorlist' element={<AuthorList />} />
-            <Route path='/addbook' element={<AddBook />} />
-            <Route path='/editbook/:id' element={<EditBook />} />
-            <Route path='/deletebook/:id' element={<DeleteBook />} />
+
+            <AuthProvider>
+              <Route path='/addauthor' element={<AddAuthor />} />
+              <Route path='/authorlist' element={<AuthorList />} />
+              <Route path='/addbook' element={<AddBook />} />
+              <Route path='/editbook/:id' element={<EditBook />} />
+              <Route path='/deletebook/:id' element={<DeleteBook />} />
+            </AuthProvider>
           </Routes>
         }
       />
