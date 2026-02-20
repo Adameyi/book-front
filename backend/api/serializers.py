@@ -27,17 +27,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "password"]
         extra_kwargs = {"password": {"write_only": True}}
 
-        def create(self, validated_data):
-            user = User.objects.create_user(
-                username=validated_data["username"],
-                email=validated_data("email"),
-                password=validated_data["password"],
-            )
-            Profile.objects.create(user=user)
-            return user
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+        )
+        Profile.objects.create(user=user)
+        return user
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+
     class Meta:
         model = Profile
         fields = (
@@ -45,7 +47,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "firstName",
             "lastName",
             "username",
-            "profile_image",
+            "profileImage",
             "balance",
             "created_at",
         )
@@ -70,7 +72,7 @@ class PublisherSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         validators=[
             UniqueValidator(
-                queryset=User.objects.all(),
+                queryset=Publisher.objects.all(),
                 message="A Publisher with this name already exists!",
             )
         ]
@@ -85,7 +87,7 @@ class LanguageSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         validators=[
             UniqueValidator(
-                queryset=User.objects.all(),
+                queryset=Language.objects.all(),
                 message="A Category with this name already exists!",
             )
         ]
@@ -100,7 +102,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         validators=[
             UniqueValidator(
-                queryset=User.objects.all(),
+                queryset=Author.objects.all(),
                 message="A Category with this name already exists!",
             )
         ]

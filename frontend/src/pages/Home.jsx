@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import placeholderImage from '../assets/PlaceholderImage_column.png'
 import BasicModal from '../components/modals/BasicModal'
 import { useAuth } from '../context/AuthContext'
+import { Navigate } from 'react-router';
 
 function Home() {
   const [bookData, setBookData] = useState([])

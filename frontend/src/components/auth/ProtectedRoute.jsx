@@ -1,5 +1,6 @@
 import React from 'react'
-import { Navigate, Outlet } from '../context/AuthContext'
+import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { Route } from 'react-router'
 import Home from '../../pages/Home'
 

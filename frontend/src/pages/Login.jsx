@@ -18,7 +18,7 @@ import GoogleIcon from '@mui/icons-material/Google'
 
 
 import { useFormik } from 'formik'
-import { useAuth } from '../services/AuthContext'
+import { useAuth } from '../context/AuthContext'
 
 import * as Yup from 'yup'
 import AxiosInstance from '../services/Axios'
@@ -125,8 +125,12 @@ export default function Login() {
       setError('')
       setSuccess('')
 
+
+      console.log('LOGIN - Sending:', values);
       try {
         const response = await AxiosInstance.post('users/post/', values)
+
+        console.log('LOGIN - Success:', values);
 
         //Context login function
         login(response.data.user, {
@@ -139,6 +143,7 @@ export default function Login() {
         setUser(response.data.user)
         setSuccess('Login successful! ')
       } catch (loginError) {
+        console.error('LOGIN - Error:', loginError.response?.data);
         setError(loginError.response?.data?.error || 'Login failed. Please try again.')
       } finally {
         setSubmitting(false)
