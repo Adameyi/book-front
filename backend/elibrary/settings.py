@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-sa-8dvoe-d162^icm-oqz_d#ftstd_s+jd@i%wnji9t6d(qs0c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "adameyi2.pythonanywhere.com"]
 
 
 # Application definition
@@ -124,6 +124,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:3000",
+    "https://book-front-library.vercel.app",
 ]
 
 MEDIA_URL = "/media/"
